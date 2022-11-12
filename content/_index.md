@@ -6,10 +6,8 @@ weight: 1
 
 
 # Minimizing Open&nbsp;Source Dependency Risks
-<br>
-<!-- ![Partner Logo](/images/Mend-Logo_Dark_Horizontal_withTagLine.svg) -->
+
 ![Mend Logo](/images/Mend-Logo_Dark_Horizontal_withTagLine.svg)
-<br>
 
 ## Introduction
 
@@ -44,14 +42,3 @@ Please consult your organization’s AppSec authority if you are uncomfortable w
 {{% /notice %}}
 
 [Let's get started!](/1_prerequisites.html)
-
-<br>
-
-# workshop.io REFERENCE
-
-<br>
-
-
-### The Entry Point Of The Workshop And Naming Conventions
-All modifications should be done to files in the `content` folder. `_index.md` serves as the main entry point to your workshop. Adding modules can be done utilizing the format of `#_title` as a folder within `content`. By adding a number value to the title, this helps to keep the files structured in parity with the content of the workshop. A good practice for file naming is to have the folder be the module number and the submodule numbers add to that number reflecting their order. For example, the first module is `1_ModuleOne` and the submodules would be `11_SubmoduleOne`, `12_SubmoduleTwo`, and so forth. <br> <!-- <br> applies a line break to paragraphs -->
-To ensure the modules and submodules follow the correct structure order, adjust the "weight" value in the heading of the file to reflect the order you wish to use. Three module examples are included in this template with the second being split based upon the method of setup. The same rules apply for submodules. `_index.md` will be the entry point of that module. Submodules should be named with the format of `{module number}{weight}_{title}.{language}.md`. For example, `11_Foreword.md` would be the first submodule of module one in the default language/setup. `31_PartnerSetup.ee.md` would be the first submodule of module 3 in the EventEngine language/setup.
