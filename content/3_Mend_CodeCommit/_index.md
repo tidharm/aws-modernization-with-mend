@@ -1,5 +1,5 @@
 ---
-title: "Mend for CodeCommit"
+title: "Module 2: Mend for CodeCommit"
 chapter: true
 weight: 3
 ---

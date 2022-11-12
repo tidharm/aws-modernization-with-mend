@@ -1,5 +1,5 @@
 ---
-title: "Mend for CodeBuild"
+title: "Module 1: Mend for CodeBuild"
 chapter: true
 weight: 2
 ---

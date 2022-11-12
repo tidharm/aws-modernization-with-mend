@@ -1,8 +1,8 @@
 baseURL = "/"
 languageCode = "en-US"
-defaultContentLanguage = "en" # Modify to change the default language/version of the site
+defaultContentLanguage = "ee" # Modify to change the default language/version of the site
 
-title = "Minimizing Open Source Dependency Risks"
+title = "Minimizing Open Source Dependency Risks on AWS with Mend"
 theme = "hugo-theme-learn"
 metaDataFormat = "yaml"
 defaultContentLanguageInSubdir= "false"
@@ -90,12 +90,12 @@ weight = 7
     hrefTargetBlank = true
 
 [Languages] # Modify to change the language/version settings and/or version secondary extensions
-[Languages.en]
-title = "English"
-weight = 1
-languageName = "English"
+[Languages.sp]
+title = "Self-Paced"
+weight = 2
+languageName = "Self-Paced"
 
 [Languages.ee]
 title = "Event Engine Setup"
-weight = 2
+weight = 1
 languageName = "Event Engine Setup"
