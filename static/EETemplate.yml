@@ -4,16 +4,45 @@ Description: "CodePipeline for Mend Workshop"
 
 Parameters:
 
+  #default names and locations
   StaticAssetsBucket:
-    Default: "mendtestbucket"
+    Default: "mend-aws-workshop"
     Description: Bucket for demo app source code
     Type: String
-  TeamWorkerSourceKey:
-    Default: "easybuggy-master.zip"
+  AppZipSourceKey:
+    Default: "easybuggy.zip"
     Description: S3 key for the zip file containing the buildspec.yml and source code
     Type: String
   AppRepositoryName:
-    Default: MyDemoEasyBuggyApp
+    Default: easybuggy
+    Type: String
+  RenovateRepositoryName:
+    Default: mend-renovate
+    Type: String
+  SecretsManagerName:
+    Default: MendSecret
+    Type: String
+  AppCodeBuildProjectName:
+    Default: CI-easybuggy
+    Type: String
+  RenovateCodeBuildProjectName:
+    Default: SC-mend-renovate
+    Type: String
+  RenovateEventBridgeRuleName:
+    Default: sched-mend-renovate
+    Type: String
+  RenovateScheduleExpression:
+    Default: cron(55 * * * ? *)
+    Type: String
+
+  #mandatory input parameters
+  WSAPIKEY:
+    Type: String
+  WSUSERKEY:
+    Type: String
+  AWSACCESSKEYID:
+    Type: String
+  AWSSECRETACCESSKEY:
     Type: String
 
 Resources:
@@ -29,15 +58,77 @@ Resources:
     Type: AWS::CodeCommit::Repository
     Properties:
       RepositoryName: !Ref AppRepositoryName
-      RepositoryDescription:  This is the repository in CodeCommit
+      RepositoryDescription: AWS Mend workshop demo project
       Code:
         S3:
           Bucket: !Ref StaticAssetsBucket
           Key: !Join
           - ''
-          - - !Ref TeamWorkerSourceKey
+          - - !Ref AppZipSourceKey
 
-  DockerBuildCodeBuildProject:
+  RenovateRepo:
+    Type: AWS::CodeCommit::Repository
+    Properties:
+      RepositoryName: !Ref RenovateRepositoryName
+      RepositoryDescription: Mend Renovate for CodeCommit
+
+  RenovateCodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties: 
+      Name: !Ref AppCodeBuildProjectName
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Source:
+        Type: "CODECOMMIT"
+        Location: !Sub
+          - "https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/!{RepoName}"
+          - RepoName: !Ref RenovateRepositoryName
+        BuildSpec: "buildspec.yml"
+      Environment:
+        ComputeType: "BUILD_GENERAL1_SMALL"
+        Image: "aws/codebuild/standard:5.0"
+        Type: "LINUX_CONTAINER"
+      Name: !Ref RenovateCodeBuildProjectName
+      ServiceRole: !Ref RenovateCodeBuildServiceRole
+  
+  ScheduledEvent:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: !Ref RenovateEventBridgeRuleName
+      ScheduleExpression: !Ref RenovateScheduleExpression
+      State: ENABLED
+      Targets:
+      - Arn: !GetAtt 
+          - RenovateCodeBuildProject
+          - Arn
+        Id: RenovateCodeBuildProjectTarget
+        RoleArn: !GetAtt 
+          - EventBridgeIAMrole
+          - Arn
+  
+  EventBridgeIAMrole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "events.amazonaws.com"
+            Action: 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Resource: "*"
+                  Effect: Allow
+                  Action:
+                    - codebuild:StartBuild
+
+  AppCodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
@@ -57,11 +148,11 @@ Resources:
           - Name: REPOSITORY_URI
             Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${MyAppImage}
             Type: PLAINTEXT
-      Name: !Sub ${AWS::StackName}-image-build
+      Name: !Ref AppCodeBuildProjectName
       ServiceRole: !Ref CodePipelineServiceRole
 
   MyAppPipeline:
-    Type: 'AWS::CodePipeline::Pipeline'
+    Type: AWS::CodePipeline::Pipeline
     Properties:
       ArtifactStore:
         Type: S3
@@ -83,7 +174,7 @@ Resources:
                 BranchName: main
                 RepositoryName: !Ref AppRepositoryName
               RunOrder: 1
-        - Name: 'Build_Docker_Container'
+        - Name: 'Build_App_Container'
           Actions:
             - Name: CodeBuild
               ActionTypeId:
@@ -96,8 +187,16 @@ Resources:
               OutputArtifacts:
                 - Name: BuildArtifact
               Configuration:
-                ProjectName: !Ref DockerBuildCodeBuildProject
+                ProjectName: !Ref AppCodeBuildProject
               RunOrder: 1
+
+  WorkshopSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties: 
+      Description: Mend Access Keys
+      Name: !Ref SecretsManagerName
+      SecretString: 
+        '{"WS_APIKEY":!Ref WSAPIKEY,"WS_USERKEY":!Ref WSUSERKEY,"AWS_ACCESS_KEY_ID":!Ref AWSACCESSKEYID,"AWS_SECRET_ACCESS_KEY":!Ref AWSSECRETACCESSKEY}'
 
   # CodePipeline does not automatically create this for you as part of
   # creation, but this role is for the CWE Hook to trigger CodePipeline once
@@ -123,6 +222,40 @@ Resources:
               - Effect: Allow
                 Action: codepipeline:StartPipelineExecution
                 Resource: !Sub arn:aws:codepipeline:${AWS::Region}:${AWS::AccountId}:${MyAppPipeline}
+
+  RenovateCodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "cloudformation.amazonaws.com"
+                - "codedeploy.amazonaws.com"
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - codecommit:*
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - iam:PassRole
+                  - iam:CreateRole
+                  - iam:DetachRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:PassRole
+                  - iam:PutRolePolicy
+                  - cloudwatch:*
 
   # This role is used by CodePipeline to trigger deployments
   CodePipelineServiceRole:
@@ -156,6 +289,13 @@ Resources:
                 Effect: Allow
                 Action:
                   - s3:PutObject
+              - Resource: !Sub 
+                  - "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:!{SecretName}/*"
+                  - SecretName: !Ref SecretsManagerName
+                Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:DescribeSecret
               - Resource: "*"
                 Effect: Allow
                 Action:
