@@ -81,7 +81,7 @@ Resources:
       Source:
         Type: "CODECOMMIT"
         Location: !Sub
-          - "https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/!{RepoName}"
+          - "https://git-codecommit.${AWS::Region}.amazonaws.com/v1/repos/${RepoName}"
           - RepoName: !Ref RenovateRepositoryName
         BuildSpec: "buildspec.yml"
       Environment:
