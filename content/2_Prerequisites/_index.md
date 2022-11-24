@@ -11,11 +11,7 @@ weight: 1
 Setting up the required sandbox environment for deploying Mend SCA and Mend Renovate as part of your CodeBuild pipeline.  
 
 ## Environment Setup
-<ul>
-    <li> Setting up your AWS sandbox environment *(11 minutes)* </li>
-    <li> Setting up a demo project *(11 minutes)* </li>
-    <li> Setting up a Mend user account *(11 minutes)* </li>
-</ul>
+{{% children  %}}
 
 {{% notice info %}}
 <p style='text-align: left;'>

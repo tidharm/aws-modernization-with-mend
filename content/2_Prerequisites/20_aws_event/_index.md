@@ -1,5 +1,5 @@
 ---
-title: "At an AWS Event..."
+title: "At an AWS Event"
 chapter: false
 weight: 20
 ---

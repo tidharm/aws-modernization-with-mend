@@ -4,6 +4,10 @@ chapter: false
 weight: 10
 ---
 
+{{% notice info %}}
+This section is optional. If you have local IDE where you can format YAML files and explore code as needed, you can skip it and move to the next section.
+{{% /notice %}}
+
 [AWS Cloud9](https://aws.amazon.com/cloud9/) is a cloud-based integrated development environment (IDE) that let you write, run, and debug your code with just a browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular programming languages, so you don’t need to install your own to edit files or configuration.
 
 We will use Amazon Cloud9 to access our AWS account via the AWS CLI in this workshop, modify build configuration and more. There are a couple steps to access it:

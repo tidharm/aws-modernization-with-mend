@@ -20,7 +20,7 @@ Parameters:
     Default: mend-renovate
     Type: String
   SecretsManagerName:
-    Default: MendSecret
+    Default: Mend/Workshop
     Type: String
   AppCodeBuildProjectName:
     Default: CI-easybuggy
@@ -195,8 +195,12 @@ Resources:
     Properties: 
       Description: Mend Access Keys
       Name: !Ref SecretsManagerName
-      SecretString: 
-        '{"WS_APIKEY":!Ref WSAPIKEY,"WS_USERKEY":!Ref WSUSERKEY,"AWS_ACCESS_KEY_ID":!Ref AWSACCESSKEYID,"AWS_SECRET_ACCESS_KEY":!Ref AWSSECRETACCESSKEY}'
+      SecretString: !Sub 
+        - '{"WS_APIKEY":${APIKEY},"WS_USERKEY":${USERKEY},"AWS_ACCESS_KEY_ID":${ACCESSKEY},"AWS_SECRET_ACCESS_KEY":${SECRETKEY}}'
+        - APIKEY: !Ref WSAPIKEY
+          USERKEY: !Ref WSUSERKEY
+          ACCESSKEY: !Ref AWSACCESSKEYID
+          SECRETKEY: !Ref AWSSECRETACCESSKEY
 
   # CodePipeline does not automatically create this for you as part of
   # creation, but this role is for the CWE Hook to trigger CodePipeline once
@@ -289,9 +293,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - s3:PutObject
-              - Resource: !Sub 
-                  - "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:!{SecretName}/*"
-                  - SecretName: !Ref SecretsManagerName
+              - Resource: "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
                 Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
