@@ -2,7 +2,7 @@
 
 ## Description
 
-TBD
+WORKSHOP CONTENT IS IN PROGRESS.
 
  ## What is a workshop?
 
