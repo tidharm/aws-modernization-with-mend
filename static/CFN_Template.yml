@@ -196,7 +196,7 @@ Resources:
       Description: Mend Access Keys
       Name: !Ref SecretsManagerName
       SecretString: !Sub 
-        - '{"WS_APIKEY":${APIKEY},"WS_USERKEY":${USERKEY},"AWS_ACCESS_KEY_ID":${ACCESSKEY},"AWS_SECRET_ACCESS_KEY":${SECRETKEY}}'
+        - '{"WS_APIKEY":"${APIKEY}","WS_USERKEY":"${USERKEY}","AWS_ACCESS_KEY_ID":"${ACCESSKEY}","AWS_SECRET_ACCESS_KEY":"${SECRETKEY}"}'
         - APIKEY: !Ref WSAPIKEY
           USERKEY: !Ref WSUSERKEY
           ACCESSKEY: !Ref AWSACCESSKEYID
@@ -293,7 +293,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - s3:PutObject
-              - Resource: "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
+              - Resource: "*"
                 Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
