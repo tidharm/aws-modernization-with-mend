@@ -16,6 +16,10 @@ Parameters:
   AppRepositoryName:
     Default: easybuggy
     Type: String
+  RenovateZipSourceKey:
+    Default: "mend-renovate.zip"
+    Description: S3 key for the zip file containing the buildspec.yml
+    Type: String
   RenovateRepositoryName:
     Default: mend-renovate
     Type: String
@@ -67,6 +71,12 @@ Resources:
     Properties:
       RepositoryName: !Ref RenovateRepositoryName
       RepositoryDescription: Mend Renovate for CodeCommit
+      Code:
+        S3:
+          Bucket: !Ref StaticAssetsBucket
+          Key: !Join
+          - ''
+          - - !Ref RenovateZipSourceKey
 
   RenovateCodeBuildProject:
     Type: AWS::CodeBuild::Project
@@ -244,7 +254,6 @@ Resources:
               - Resource: "*"
                 Effect: Allow
                 Action:
-                  # - codecommit:*
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
                   - iam:PassRole
@@ -277,6 +286,8 @@ Resources:
                   - codecommit:GitPush
                   - codecommit:UpdatePullRequestStatus
                   - codecommit:GetPullRequest
+                  - secretsmanager:GetSecretValue
+                  - secretsmanager:DescribeSecret
 
   # This role is used by CodePipeline to trigger deployments
   CodePipelineServiceRole:
