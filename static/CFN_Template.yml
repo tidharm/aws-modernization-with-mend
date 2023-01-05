@@ -20,7 +20,7 @@ Parameters:
     Default: mend-renovate
     Type: String
   SecretsManagerName:
-    Default: Mend/Workshop
+    Default: Mend
     Type: String
   AppCodeBuildProjectName:
     Default: CI-easybuggy
@@ -39,10 +39,6 @@ Parameters:
   WSAPIKEY:
     Type: String
   WSUSERKEY:
-    Type: String
-  AWSACCESSKEYID:
-    Type: String
-  AWSSECRETACCESSKEY:
     Type: String
 
 Resources:
@@ -196,11 +192,9 @@ Resources:
       Description: Mend Access Keys
       Name: !Ref SecretsManagerName
       SecretString: !Sub 
-        - '{"WS_APIKEY":"${APIKEY}","WS_USERKEY":"${USERKEY}","AWS_ACCESS_KEY_ID":"${ACCESSKEY}","AWS_SECRET_ACCESS_KEY":"${SECRETKEY}"}'
+        - '{"WS_APIKEY": "${APIKEY}","WS_USERKEY": "${USERKEY}"}'
         - APIKEY: !Ref WSAPIKEY
           USERKEY: !Ref WSUSERKEY
-          ACCESSKEY: !Ref AWSACCESSKEYID
-          SECRETKEY: !Ref AWSSECRETACCESSKEY
 
   # CodePipeline does not automatically create this for you as part of
   # creation, but this role is for the CWE Hook to trigger CodePipeline once
@@ -250,16 +244,39 @@ Resources:
               - Resource: "*"
                 Effect: Allow
                 Action:
-                  - codecommit:*
+                  # - codecommit:*
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
                   - iam:PassRole
                   - iam:CreateRole
                   - iam:DetachRolePolicy
                   - iam:AttachRolePolicy
-                  - iam:PassRole
                   - iam:PutRolePolicy
                   - cloudwatch:*
+                  - logs:*
+        - PolicyName: RenovateForCodeCommit
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  # https://docs.renovatebot.com/modules/platform/codecommit/#permissions
+                  - codecommit:DeleteCommentContent
+                  - codecommit:UpdatePullRequestDescription
+                  - codecommit:GitPull
+                  - codecommit:ListPullRequests
+                  - codecommit:GetCommentsForPullRequest
+                  - codecommit:ListRepositories
+                  - codecommit:UpdatePullRequestTitle
+                  - codecommit:GetFile
+                  - codecommit:UpdateComment
+                  - codecommit:GetRepository
+                  - codecommit:CreatePullRequest
+                  - codecommit:CreatePullRequestApprovalRule
+                  - codecommit:GitPush
+                  - codecommit:UpdatePullRequestStatus
+                  - codecommit:GetPullRequest
 
   # This role is used by CodePipeline to trigger deployments
   CodePipelineServiceRole:
@@ -293,6 +310,7 @@ Resources:
                 Effect: Allow
                 Action:
                   - s3:PutObject
+              # - Resource: "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*"
               - Resource: "*"
                 Effect: Allow
                 Action:

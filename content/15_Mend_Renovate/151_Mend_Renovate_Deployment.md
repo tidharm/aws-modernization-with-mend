@@ -1,8 +1,10 @@
 ---
 title: "Deployment"
-chapter: false
+chapter: true
 weight: 151
 ---
+
+# Mend Renovate
 
 ## Deploy Mend Renovate for CodeCommit
 
@@ -94,13 +96,7 @@ Add the following variables to the buildspec's `env` section:
 | `RENOVATE_PLATFORM` | Repository platform type (see [supported platforms](https://docs.renovatebot.com/modules/platform/)) | `codecommit` |
 | `RENOVATE_REPOSITORIES` | A list of repository names to scan | `['repo1', 'repo2']` |
 | `RENOVATE_CONFIG` | Renovate recommended configuration (see [full reference](https://docs.renovatebot.com/self-hosted-configuration/)) | `'{"onboardingConfig": {"extends":` `["config:base"]}}'` |
-| `AWS_ACCESS_KEY_ID` | AWS [IAM access key id](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-list) |  |
-| `AWS_SECRET_ACCESS_KEY` | AWS [Secret access key](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-envvars.html#envvars-list) |  |
 | `AWS_REGION` | AWS region | `us-east-1` |
-
-{{% notice tip %}}
-AWS CodeBuild will not let you hard-code the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` values, so you'll need to utilize the [AWS Secret Manager](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-codebuild-adds-support-for-aws-secrets-manager/) for them.  
-{{% /notice %}}
 
 {{% notice tip %}}
 The variable `AWS_REGION` is a built-in AWS environment variable, so there's no need to specify it, you can simply use the `exported-variables` node to use its value.  
@@ -124,9 +120,6 @@ env:
     RENOVATE_PLATFORM: "codecommit"
     RENOVATE_REPOSITORIES: ['easybuggy']
     RENOVATE_CONFIG: '{"onboardingConfig":{"extends":["config:base"]}}'
-  secrets-manager:
-    AWS_ACCESS_KEY_ID: "Mend/Creds:AWS_ACCESS_KEY_ID"
-    AWS_SECRET_ACCESS_KEY: "Mend/Creds:AWS_SECRET_ACCESS_KEY"
   exported-variables:
     - AWS_REGION
 ```
@@ -139,7 +132,7 @@ phases:
   build:
     on-failure: CONTINUE
     commands:
-      - docker run --rm -e AWS_REGION -e AWS_ACCESS_KEY_ID -e AWS_SECRET_ACCESS_KEY -e RENOVATE_CONFIG -e RENOVATE_ENDPOINT -e RENOVATE_PLATFORM -e RENOVATE_REPOSITORIES renovate/renovate
+      - docker run --rm -e AWS_REGION -e RENOVATE_CONFIG -e RENOVATE_ENDPOINT -e RENOVATE_PLATFORM -e RENOVATE_REPOSITORIES renovate/renovate
 ```
 
 

@@ -1,13 +1,16 @@
 ---
 title: "Setting Up Mend User Account"
-chapter: false
-weight: 10
+chapter: true
+weight: 21
 ---
+
+# Prerequisites
 
 ## Setting Up Mend User Account
 
-To proceed with this workshop,  you will need an API access key to the Mend SCA Sandbox environment. . To obtain your access key, please register on this link:
-[https://www.mend.io/aws-workshop-io/](https://www.mend.io/aws-workshop-io/)
+To proceed with this workshop, you will need access credentials for the Mend Workshop Sandbox environment.  
+
+To obtain your access credentials, please **[register here](https://www.mend.io/aws-workshop-io/)**.
 
 ![](/images/10_prerequisites/mend_user_account.png)
 
