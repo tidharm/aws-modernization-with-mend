@@ -1,10 +1,10 @@
 ---
-title: "Mend Renovate"
+title: "Mend Renovate - update your dependencies "
 chapter: true
 weight: 15
 ---
 
-# Mend Renovate
+# Mend Renovate - update your dependencies 
 
 ## Overview
 Mend Renovate keeps source code dependencies up-to-date using automated Pull Requests.  
