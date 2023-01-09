@@ -1,7 +1,7 @@
 ---
 title: "Setting Up Mend User Account"
 chapter: true
-weight: 21
+weight: 10
 ---
 
 # Prerequisites
