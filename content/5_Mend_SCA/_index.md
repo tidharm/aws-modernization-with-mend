@@ -1,5 +1,5 @@
 ---
-title: "Mend SCA - identify security vulnerabilities and licensesstatus
+title: "Mend SCA - identify security vulnerabilities and licenses
 "
 chapter: true
 weight: 5
