@@ -83,7 +83,7 @@ For syntax reference and more information on build specification (buildspec) fil
 
 To integrate **Mend Renovate** with **AWS CodeBuild**, you'll need to update your build specification (`buildspec.yml`) file.  
 
-If the file doesn't exist, create it under your project's root directory (if you do not have committer access to the source repo, you can also use the CodeBuild console to insert build commands manually).  
+If the file doesn't exist, create it under your project's root directory (if you do not have committer access to the source repo, you can also use the CodeBuild console to paste build commands manually).  
 
 ![Update build specification](/images/mend-renovate/mend-renovate-update-buildspec.png)
 

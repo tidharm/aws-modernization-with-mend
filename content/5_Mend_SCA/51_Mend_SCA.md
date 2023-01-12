@@ -29,7 +29,7 @@ Add the following variables to the buildspec's `env` section:
 | `WS_USERKEY` | Your Mend service user token (User Key) |
 
 {{% notice info %}}
-Both your API Key and User Key can be found in the confirmation email you received during the [Setting Up Mend User Account](/2_prerequisites/22_setup_mend_account.html) step.
+Both your API Key and User Key can be found in the confirmation email you received during the [Setting Up Mend User Account](/2_prerequisites/10_setup_mend_account.html) step.
 {{% /notice %}}
 
 To avoid hard-coding your Mend API Key and User Key, it is recommended to utilize the [AWS Secret Manager](https://aws.amazon.com/about-aws/whats-new/2019/11/aws-codebuild-adds-support-for-aws-secrets-manager/):  
@@ -47,11 +47,11 @@ env:
 ##### Additional Optional Parameters
 Additional environment variables you can add for extended functionality
 
-| Variable | Description |
-|:----|:----|
-| `WS_FILESYSTEMSCAN` | Set to `false` to only enable package manager-based dependency resolution, avoiding source language scanning |
+| Variable | Description                                                                                                                               |
+|:----|:------------------------------------------------------------------------------------------------------------------------------------------|
+| `WS_FILESYSTEMSCAN` | Set to `false` to only enable package manager-based dependency resolution, avoiding source language scanning                              |
 | `WS_SCANCOMMENT` | Add a comment to a scan, to be displayed in the Project Vitals panel of the Project pages, as well as the Plugin Request History Report |
-| `WS_CHECKPOLICIES` | Enable policy check during the scan, to allow build failure on policy violation |
+| `WS_CHECKPOLICIES` | Enable policy check during the scan, to allow build failure on policy violation                                                           |
 
 ```yaml
 env:
